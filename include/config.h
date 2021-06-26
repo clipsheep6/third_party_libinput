@@ -11,7 +11,7 @@
 
 #define HAVE_LOCALE_H 1 
 
-#undef HAVE_VERSIONSORT
+#define HAVE_VERSIONSORT 1
 #define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/latest"
 
 #define LIBINPUT_QUIRKS_DIR "/usr/share/libinput"
