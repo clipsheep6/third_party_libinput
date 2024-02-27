@@ -27,7 +27,41 @@
         },
         "build": {
             "sub_component": [],
-            "inner_kits": [],
+            "inner_kits": [
+                {
+                    "name": "//third_party/libinput:libinput-third",
+                    "header": {
+                      "header_files": [
+                        "builddir.h",
+                        "evdev-fallback.h",
+                        "evdev-mt-touchpad.h",
+                        "evdev-tablet-pad.h",
+                        "evdev-tablet.h",
+                        "evdev.h",
+                        "filter-private.h",
+                        "filter.h",
+                        "libinput-private-config.h",
+                        "libinput-private.h",
+                        "libinput-util.h",
+                        "libinput-versionsort.h",
+                        "libinput.h",
+                        "quirks.h",
+                        "timer.h",
+                        "udev-seat.h",
+                        "util-bits.h",
+                        "util-input-event.h",
+                        "util-list.h",
+                        "util-macros.h",
+                        "util-matrix.h",
+                        "util-prop-parsers.h",
+                        "util-ratelimit.h",
+                        "util-strings.h",
+                        "util-time.h"
+                    ],
+                      "header_base": "//third_party/libinput/src"
+                    }
+                }
+            ],
             "test": []
         }
     }
