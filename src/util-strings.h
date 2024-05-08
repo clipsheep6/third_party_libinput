@@ -415,7 +415,7 @@ str_sanitize(const char *str)
 		return strdup(str);
 
 	size_t slen = min(strlen(str), 512);
-	char *sanitized = zalloc(2 * slen + 1);
+    char *sanitized = (char *)zalloc(2 * slen + 1);
 	const char *src = str;
 	char *dst = sanitized;
 
