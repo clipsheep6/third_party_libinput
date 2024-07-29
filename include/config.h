@@ -33,7 +33,7 @@
 #define HAVE_VERSIONSORT 1
 #endif
 
-#define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/1.25.0"
+#define HTTP_DOC_LINK ""
 
 #define LIBINPUT_QUIRKS_DIR "/etc/libinput/quirks"
 
