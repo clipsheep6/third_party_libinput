@@ -195,7 +195,7 @@ diff -Naur old/export_include/libinput.h new/export_include/libinput.h
  				       uint32_t height);
  
  /**
-+ * @brief »ñÈ¡´¥ÃşÆÁµÄ¹¤¾ßÀàĞÍÇøÓòÊôĞÔ
++ * @brief è·å–è§¦æ‘¸å±çš„å·¥å…·ç±»å‹åŒºåŸŸå±æ€§
 + */
 +int32_t
 +libinput_event_touch_get_tool_type(struct libinput_event_touch *event);
@@ -460,13 +460,13 @@ diff -Naur old/export_include/libinput.h new/export_include/libinput.h
 +libinput_event_touchpad_get_touch_contact_short_axis(struct libinput_event_touch *event);
 +
 +/**
-+ * @brief »ñÈ¡´¥Ãş°åµÄ¹¤¾ßÀàĞÍÇøÓòÊôĞÔ
++ * @brief è·å–è§¦æ‘¸æ¿çš„å·¥å…·ç±»å‹åŒºåŸŸå±æ€§
 + */
 +int32_t
 +libinput_event_touchpad_get_tool_type(struct libinput_event_touch *event);
 +
 +/**
-+ * @brief »ñÈ¡´¥Ãş°å¹¤¾ßÀàĞÍ°´Å¥ÊÇ·ñ°´ÏÂ
++ * @brief è·å–è§¦æ‘¸æ¿å·¥å…·ç±»å‹æŒ‰é’®æ˜¯å¦æŒ‰ä¸‹
 + */
 +int32_t
 +libinput_device_touchpad_btn_tool_type_down(struct libinput_device *device, int32_t btnToolType);
@@ -545,14 +545,14 @@ diff -Naur old/export_include/libinput.h new/export_include/libinput.h
  libinput_event_gesture_get_angle_delta(struct libinput_event_gesture *event);
  
  /**
-+ * »ñÈ¡gestureÖĞÊÖÖ¸µÄ×ø±êĞÅÏ¢, idx±íÊ¾ÊÖÖ¸µÄË÷Òı
++ * è·å–gestureä¸­æ‰‹æŒ‡çš„åæ ‡ä¿¡æ¯, idxè¡¨ç¤ºæ‰‹æŒ‡çš„ç´¢å¼•
 + */
 +int
 +libinput_event_gesture_get_device_coords_x(struct libinput_event_gesture *event, uint32_t idx);
 +int
 +libinput_event_gesture_get_device_coords_y(struct libinput_event_gesture *event, uint32_t idx);
 +/**
-+ * »ñÈ¡´øslotµÄtouchesĞÅÏ¢, ½öÖ§³ÖLIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
++ * è·å–å¸¦slotçš„touchesä¿¡æ¯, ä»…æ”¯æŒLIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
 + */
 +struct sloted_coords_info *
 +libinput_event_gesture_get_solt_touches(struct libinput_event_gesture *event);
@@ -649,18 +649,18 @@ diff -Naur old/export_include/libinput.h new/export_include/libinput.h
 +struct libinput_event_joystick_axis*
 +    libinput_event_get_joystick_axis_event(struct libinput_event* event);
 +/**
-+ * @brief »ñÈ¡ÖáÊÂ¼şµÄÊ±¼ä
++ * @brief è·å–è½´äº‹ä»¶çš„æ—¶é—´
 + */
 +uint64_t
 +libinput_event_get_joystick_axis_time(struct libinput_event_joystick_axis *event);
 +
 +/**
-+ * @brief »ñÈ¡joystickÖ¸¶¨ÖáµÄÊı¾İÊÇ·ñ±ä»¯
++ * @brief è·å–joystickæŒ‡å®šè½´çš„æ•°æ®æ˜¯å¦å˜åŒ–
 +*/
 +int32_t libinput_event_get_joystick_axis_value_is_changed(struct libinput_event_joystick_axis *event, enum libinput_joystick_axis_source axis);
 +
 +/**
-+ * @brief »ñÈ¡joystickÖ¸¶¨ÖáµÄabsĞÅÏ¢
++ * @brief è·å–joystickæŒ‡å®šè½´çš„absä¿¡æ¯
 +*/
 +struct libinput_event_joystick_axis_abs_info *
 +libinput_event_get_joystick_axis_abs_info(struct libinput_event_joystick_axis *event, enum libinput_joystick_axis_source axis);
@@ -672,39 +672,39 @@ diff -Naur old/export_include/libinput.h new/export_include/libinput.h
  const char *
  libinput_device_get_name(struct libinput_device *device);
  
-+/**  @brief   »ñÈ¡Éè±¸ÀàĞÍ*/
++/**  @brief   è·å–è®¾å¤‡ç±»å‹*/
 +enum evdev_device_udev_tags
 +libinput_device_get_tags(struct libinput_device* device);
 +
-+/**  @brief   Éè±¸°´¼üÄÜÁ¦²éÑ¯*/
++/**  @brief   è®¾å¤‡æŒ‰é”®èƒ½åŠ›æŸ¥è¯¢*/
 +int32_t
 +libinput_device_has_key(struct libinput_device* device, int32_t keyCode);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄ×îĞ¡Öµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„æœ€å°å€¼*/
 +int32_t
 +libinput_device_get_axis_min(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄ×î´óÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„æœ€å¤§å€¼*/
 +int32_t
 +libinput_device_get_axis_max(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄfuzzÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„fuzzå€¼*/
 +int32_t
 +libinput_device_get_axis_fuzz(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄflatÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„flatå€¼*/
 +int32_t
 +libinput_device_get_axis_flat(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄresolutionÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„resolutionå€¼*/
 +int32_t
 +libinput_device_get_axis_resolution(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸µÄbustypeÖµ*/
++/**  @brief   è·å–è®¾å¤‡çš„bustypeå€¼*/
 +unsigned int
 +libinput_device_get_id_bustype(struct libinput_device* device);
 +
-+/**  @brief   »ñÈ¡Éè±¸µÄversionÖµ*/
++/**  @brief   è·å–è®¾å¤‡çš„versionå€¼*/
 +unsigned int
 +libinput_device_get_id_version(struct libinput_device* device);
 +
@@ -715,7 +715,7 @@ diff -Naur old/export_include/libinput.h new/export_include/libinput.h
  libinput_device_touch_get_touch_count(struct libinput_device *device);
  
  /**
-+ * @brief »ñÈ¡´¥ÃşÆÁ¹¤¾ßÀàĞÍ°´Å¥ÊÇ·ñ°´ÏÂ
++ * @brief è·å–è§¦æ‘¸å±å·¥å…·ç±»å‹æŒ‰é’®æ˜¯å¦æŒ‰ä¸‹
 + */
 +int
 +libinput_device_touch_btn_tool_type_down(struct libinput_device *device, int32_t btnToolType);
@@ -1996,10 +1996,10 @@ diff -Naur old/src/evdev-joystick.c new/src/evdev-joystick.c
 +#endif // _DEBUG
 +
 +/**
-+ * @brief ³õÊ¼»¯joystick_dispatch
++ * @brief åˆå§‹åŒ–joystick_dispatch
 + * @param joystick
 + * @param device
-+ * @return bool true - ³É¹¦, false - Ê§°Ü
++ * @return bool true - æˆåŠŸ, false - å¤±è´¥
 +*/
 +bool
 +joystick_init(struct joystick_dispatch* pJoystick, struct evdev_device* device)
@@ -2109,7 +2109,7 @@ diff -Naur old/src/evdev-joystick.h new/src/evdev-joystick.h
 +#endif // _DEBUG
 +
 +/**
-+ * @brief ´´½¨evdev_dispatch½á¹¹Ìå
++ * @brief åˆ›å»ºevdev_dispatchç»“æ„ä½“
 + * @param device
 + * @return struct evdev_dispatch*
 +*/
@@ -2368,7 +2368,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  #define HOLD_AND_MOTION_THRESHOLD 0.5 /* mm */
  #define PINCH_DISAMBIGUATION_MOVE_THRESHOLD 1.5 /* mm */
 -
-+#define ROTATE_DELTA_ANGLE_THRESHOLD 5.0 /* ¡ã */
++#define ROTATE_DELTA_ANGLE_THRESHOLD 5.0 /* Â° */
 +#define ROTATE_DELTA_DISTANCE_THRESHOLD 100.0 /* ppi */
  enum gesture_event {
  	GESTURE_EVENT_RESET,
@@ -4225,7 +4225,7 @@ diff -Naur old/src/evdev.h new/src/evdev.h
  struct udev_device *
  evdev_device_get_udev_device(struct evdev_device *device);
  
-+/**  @brief   »ñÈ¡Éè±¸ÀàĞÍ */
++/**  @brief   è·å–è®¾å¤‡ç±»å‹ */
 +enum evdev_device_udev_tags
 +evdev_device_get_udev_device_tags(struct evdev_device* device);
 +
@@ -4525,9 +4525,9 @@ diff -Naur old/src/libinput-util.c new/src/libinput-util.c
 +++ new/src/libinput-util.c	2021-01-01 00:00:00.000000000 +0800
 @@ -0,0 +1,102 @@
 +/*
-+ * Copyright ? 2008-2011 Kristian H?gsberg
-+ * Copyright ? 2011 Intel Corporation
-+ * Copyright ? 2013-2015 Red Hat, Inc.
++ * Copyright Â© 2008-2011 Kristian HÃ¸gsberg
++ * Copyright Â© 2011 Intel Corporation
++ * Copyright Â© 2013-2015 Red Hat, Inc.
 + *
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -5920,7 +5920,7 @@ diff -Naur old/src/libinput.c new/src/libinput.c
 +}
 +
 +/**
-+ * @brief »ñÈ¡joystickÖ¸¶¨ÖáµÄÊı¾İÊÇ·ñ±ä»¯
++ * @brief è·å–joystickæŒ‡å®šè½´çš„æ•°æ®æ˜¯å¦å˜åŒ–
 +*/
 +int32_t libinput_event_get_joystick_axis_value_is_changed(struct libinput_event_joystick_axis *event, enum libinput_joystick_axis_source axis)
 +{
@@ -5932,7 +5932,7 @@ diff -Naur old/src/libinput.c new/src/libinput.c
 +}
 +
 +/**
-+ * @brief »ñÈ¡ÖáÊÂ¼şµÄÊ±¼ä
++ * @brief è·å–è½´äº‹ä»¶çš„æ—¶é—´
 + */
 +uint64_t
 +libinput_event_get_joystick_axis_time(struct libinput_event_joystick_axis *event)
@@ -5945,7 +5945,7 @@ diff -Naur old/src/libinput.c new/src/libinput.c
 +}
 +
 +/**
-+ * @brief »ñÈ¡joystickÖ¸¶¨ÖáµÄabsĞÅÏ¢
++ * @brief è·å–joystickæŒ‡å®šè½´çš„absä¿¡æ¯
 +*/
 +struct libinput_event_joystick_axis_abs_info *
 +libinput_event_get_joystick_axis_abs_info(struct libinput_event_joystick_axis *event, enum libinput_joystick_axis_source axis)
@@ -6575,7 +6575,7 @@ diff -Naur old/src/libinput.h new/src/libinput.h
  				       uint32_t height);
  
  /**
-+ * @brief »ñÈ¡´¥ÃşÆÁµÄ¹¤¾ßÀàĞÍÇøÓòÊôĞÔ
++ * @brief è·å–è§¦æ‘¸å±çš„å·¥å…·ç±»å‹åŒºåŸŸå±æ€§
 + */
 +int32_t
 +libinput_event_touch_get_tool_type(struct libinput_event_touch *event);
@@ -6840,13 +6840,13 @@ diff -Naur old/src/libinput.h new/src/libinput.h
 +libinput_event_touchpad_get_touch_contact_short_axis(struct libinput_event_touch *event);
 +
 +/**
-+ * @brief »ñÈ¡´¥Ãş°åµÄ¹¤¾ßÀàĞÍÇøÓòÊôĞÔ
++ * @brief è·å–è§¦æ‘¸æ¿çš„å·¥å…·ç±»å‹åŒºåŸŸå±æ€§
 + */
 +int32_t
 +libinput_event_touchpad_get_tool_type(struct libinput_event_touch *event);
 +
 +/**
-+ * @brief »ñÈ¡´¥Ãş°å¹¤¾ßÀàĞÍ°´Å¥ÊÇ·ñ°´ÏÂ
++ * @brief è·å–è§¦æ‘¸æ¿å·¥å…·ç±»å‹æŒ‰é’®æ˜¯å¦æŒ‰ä¸‹
 + */
 +int32_t
 +libinput_device_touchpad_btn_tool_type_down(struct libinput_device *device, int32_t btnToolType);
@@ -6925,14 +6925,14 @@ diff -Naur old/src/libinput.h new/src/libinput.h
  libinput_event_gesture_get_angle_delta(struct libinput_event_gesture *event);
  
  /**
-+ * »ñÈ¡gestureÖĞÊÖÖ¸µÄ×ø±êĞÅÏ¢, idx±íÊ¾ÊÖÖ¸µÄË÷Òı
++ * è·å–gestureä¸­æ‰‹æŒ‡çš„åæ ‡ä¿¡æ¯, idxè¡¨ç¤ºæ‰‹æŒ‡çš„ç´¢å¼•
 + */
 +int
 +libinput_event_gesture_get_device_coords_x(struct libinput_event_gesture *event, uint32_t idx);
 +int
 +libinput_event_gesture_get_device_coords_y(struct libinput_event_gesture *event, uint32_t idx);
 +/**
-+ * »ñÈ¡´øslotµÄtouchesĞÅÏ¢, ½öÖ§³ÖLIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
++ * è·å–å¸¦slotçš„touchesä¿¡æ¯, ä»…æ”¯æŒLIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
 + */
 +struct sloted_coords_info *
 +libinput_event_gesture_get_solt_touches(struct libinput_event_gesture *event);
@@ -7029,18 +7029,18 @@ diff -Naur old/src/libinput.h new/src/libinput.h
 +struct libinput_event_joystick_axis*
 +    libinput_event_get_joystick_axis_event(struct libinput_event* event);
 +/**
-+ * @brief »ñÈ¡ÖáÊÂ¼şµÄÊ±¼ä
++ * @brief è·å–è½´äº‹ä»¶çš„æ—¶é—´
 + */
 +uint64_t
 +libinput_event_get_joystick_axis_time(struct libinput_event_joystick_axis *event);
 +
 +/**
-+ * @brief »ñÈ¡joystickÖ¸¶¨ÖáµÄÊı¾İÊÇ·ñ±ä»¯
++ * @brief è·å–joystickæŒ‡å®šè½´çš„æ•°æ®æ˜¯å¦å˜åŒ–
 +*/
 +int32_t libinput_event_get_joystick_axis_value_is_changed(struct libinput_event_joystick_axis *event, enum libinput_joystick_axis_source axis);
 +
 +/**
-+ * @brief »ñÈ¡joystickÖ¸¶¨ÖáµÄabsĞÅÏ¢
++ * @brief è·å–joystickæŒ‡å®šè½´çš„absä¿¡æ¯
 +*/
 +struct libinput_event_joystick_axis_abs_info *
 +libinput_event_get_joystick_axis_abs_info(struct libinput_event_joystick_axis *event, enum libinput_joystick_axis_source axis);
@@ -7052,39 +7052,39 @@ diff -Naur old/src/libinput.h new/src/libinput.h
  const char *
  libinput_device_get_name(struct libinput_device *device);
  
-+/**  @brief   »ñÈ¡Éè±¸ÀàĞÍ*/
++/**  @brief   è·å–è®¾å¤‡ç±»å‹*/
 +enum evdev_device_udev_tags
 +libinput_device_get_tags(struct libinput_device* device);
 +
-+/**  @brief   Éè±¸°´¼üÄÜÁ¦²éÑ¯*/
++/**  @brief   è®¾å¤‡æŒ‰é”®èƒ½åŠ›æŸ¥è¯¢*/
 +int32_t
 +libinput_device_has_key(struct libinput_device* device, int32_t keyCode);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄ×îĞ¡Öµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„æœ€å°å€¼*/
 +int32_t
 +libinput_device_get_axis_min(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄ×î´óÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„æœ€å¤§å€¼*/
 +int32_t
 +libinput_device_get_axis_max(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄfuzzÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„fuzzå€¼*/
 +int32_t
 +libinput_device_get_axis_fuzz(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄflatÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„flatå€¼*/
 +int32_t
 +libinput_device_get_axis_flat(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸ÌØ¶¨ÖáµÄresolutionÖµ*/
++/**  @brief   è·å–è®¾å¤‡ç‰¹å®šè½´çš„resolutionå€¼*/
 +int32_t
 +libinput_device_get_axis_resolution(struct libinput_device* device, int32_t code);
 +
-+/**  @brief   »ñÈ¡Éè±¸µÄbustypeÖµ*/
++/**  @brief   è·å–è®¾å¤‡çš„bustypeå€¼*/
 +unsigned int
 +libinput_device_get_id_bustype(struct libinput_device* device);
 +
-+/**  @brief   »ñÈ¡Éè±¸µÄversionÖµ*/
++/**  @brief   è·å–è®¾å¤‡çš„versionå€¼*/
 +unsigned int
 +libinput_device_get_id_version(struct libinput_device* device);
 +
@@ -7095,7 +7095,7 @@ diff -Naur old/src/libinput.h new/src/libinput.h
  libinput_device_touch_get_touch_count(struct libinput_device *device);
  
  /**
-+ * @brief »ñÈ¡´¥ÃşÆÁ¹¤¾ßÀàĞÍ°´Å¥ÊÇ·ñ°´ÏÂ
++ * @brief è·å–è§¦æ‘¸å±å·¥å…·ç±»å‹æŒ‰é’®æ˜¯å¦æŒ‰ä¸‹
 + */
 +int
 +libinput_device_touch_btn_tool_type_down(struct libinput_device *device, int32_t btnToolType);
