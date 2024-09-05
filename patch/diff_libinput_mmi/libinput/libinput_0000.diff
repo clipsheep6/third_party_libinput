@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 diff -Naur old/export_include/libinput.h new/export_include/libinput.h
---- old/export_include/libinput.h	2021-01-01 00:00:00.000000000 +0800
+--- old/export_include/libinput.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/export_include/libinput.h	2021-01-01 00:00:00.000000000 +0800
 @@ -196,6 +196,22 @@
  	LIBINPUT_DEVICE_CAP_TABLET_PAD = 4,
@@ -921,7 +921,7 @@ diff -Naur old/hm_src/hm_missing.h new/hm_src/hm_missing.h
 +
 +#endif
 diff -Naur old/include/linux/freebsd/input-event-codes.h new/include/linux/freebsd/input-event-codes.h
---- old/include/linux/freebsd/input-event-codes.h	2021-01-01 00:00:00.000000000 +0800
+--- old/include/linux/freebsd/input-event-codes.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/include/linux/freebsd/input-event-codes.h	2021-01-01 00:00:00.000000000 +0800
 @@ -335,7 +335,7 @@
  #define KEY_WIMAX		KEY_WWAN
@@ -951,7 +951,7 @@ diff -Naur old/include/linux/freebsd/input-event-codes.h new/include/linux/freeb
  
  /*
 diff -Naur old/include/linux/linux/input-event-codes.h new/include/linux/linux/input-event-codes.h
---- old/include/linux/linux/input-event-codes.h	2021-01-01 00:00:00.000000000 +0800
+--- old/include/linux/linux/input-event-codes.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/include/linux/linux/input-event-codes.h	2021-01-01 00:00:00.000000000 +0800
 @@ -335,7 +335,7 @@
  #define KEY_WIMAX		KEY_WWAN
@@ -981,7 +981,7 @@ diff -Naur old/include/linux/linux/input-event-codes.h new/include/linux/linux/i
  
  /*
 diff -Naur old/src/evdev-fallback.c new/src/evdev-fallback.c
---- old/src/evdev-fallback.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-fallback.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-fallback.c	2021-01-01 00:00:00.000000000 +0800
 @@ -229,8 +229,11 @@
  	struct libinput_device *base = &device->base;
@@ -1149,7 +1149,7 @@ diff -Naur old/src/evdev-fallback.c new/src/evdev-fallback.c
  
  	switch (e->code) {
 +	case ABS_MT_MOVEFLAG:
-+        slot->move_flag = e->value;
++		slot->move_flag = e->value;
 +		dispatch->pending_event |= EVDEV_ABSOLUTE_MT;
 +		slot->dirty = true;
 +		break;
@@ -1232,7 +1232,7 @@ diff -Naur old/src/evdev-fallback.c new/src/evdev-fallback.c
 +	return hw_is_key_down(dispatch, btnToolType);
 +}
 diff -Naur old/src/evdev-fallback.h new/src/evdev-fallback.h
---- old/src/evdev-fallback.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-fallback.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-fallback.h	2021-01-01 00:00:00.000000000 +0800
 @@ -75,11 +75,16 @@
  
@@ -1947,7 +1947,7 @@ diff -Naur old/src/evdev-joystick.h new/src/evdev-joystick.h
 +
 +#endif
 diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons.c
---- old/src/evdev-mt-touchpad-buttons.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-mt-touchpad-buttons.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad-buttons.c	2021-01-01 00:00:00.000000000 +0800
 @@ -25,6 +25,7 @@
  
@@ -2031,6 +2031,15 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
  static inline const char*
  button_state_to_str(enum button_state state)
  {
+@@ -520,7 +588,7 @@
+ 	mm = evdev_device_unit_delta_to_mm(tp->device, &delta);
+ 	vector_length = hypot(mm.x, mm.y);
+ 
+-	if (vector_length > 5.0 /* mm */) {
++	if (vector_length > 1.0 /* mm */) {
+ 		t->button.has_moved = true;
+ 
+ 		tp_button_release_other_bottom_touches(tp,
 @@ -622,6 +690,62 @@
  }
  
@@ -2191,19 +2200,20 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 +    }
 +}
 diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestures.c
---- old/src/evdev-mt-touchpad-gestures.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-mt-touchpad-gestures.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad-gestures.c	2021-01-01 00:00:00.000000000 +0800
-@@ -36,7 +36,8 @@
+@@ -36,7 +36,9 @@
  
  #define HOLD_AND_MOTION_THRESHOLD 0.5 /* mm */
  #define PINCH_DISAMBIGUATION_MOVE_THRESHOLD 1.5 /* mm */
 -
 +#define ROTATE_DELTA_ANGLE_THRESHOLD 5.0 /* ° */
 +#define ROTATE_DELTA_DISTANCE_THRESHOLD 100.0 /* ppi */
++#define TIME_GESTURE_WAIT_ALL_FINGER_DOWN 100000
  enum gesture_event {
  	GESTURE_EVENT_RESET,
  	GESTURE_EVENT_FINGER_DETECTED,
-@@ -124,6 +125,37 @@
+@@ -124,6 +126,37 @@
  }
  
  static void
@@ -2241,7 +2251,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  tp_gesture_init_scroll(struct tp_dispatch *tp)
  {
  	struct phys_coords zero = {0.0, 0.0};
-@@ -170,17 +202,19 @@
+@@ -170,17 +203,19 @@
  	case GESTURE_STATE_SCROLL:
  		tp_gesture_init_scroll(tp);
  		break;
@@ -2267,7 +2277,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  		break;
  	case GESTURE_STATE_POINTER_MOTION:
  		break;
-@@ -233,7 +267,7 @@
+@@ -233,7 +268,7 @@
  		struct device_float_coords unaccel;
  
  		unaccel = tp_scale_to_xaxis(tp, raw);
@@ -2276,7 +2286,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  				      time,
  				      &delta,
  				      &unaccel);
-@@ -920,7 +954,27 @@
+@@ -920,7 +955,28 @@
  	delta.x = abs(first->point.x - second->point.x);
  	delta.y = abs(first->point.y - second->point.y);
  	distance_mm = evdev_device_unit_delta_to_mm(tp->device, &delta);
@@ -2294,9 +2304,10 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +		else if (angle_delta < -180.0)
 +			angle_delta += 360.0;
 +
-+		if ((fabs(angle_delta) >= ROTATE_DELTA_ANGLE_THRESHOLD) &&
-+			(fabs(distance_delta) <= ROTATE_DELTA_DISTANCE_THRESHOLD)) {
-+			tp->gesture.angle_delta = angle_delta;
++		if ((fabs(angle_delta) > ROTATE_DELTA_ANGLE_THRESHOLD) &&
++			(fabs(distance_delta) < ROTATE_DELTA_DISTANCE_THRESHOLD)) {
++			tp->gesture.angle_delta = angle_delta > 0 ?
++				angle_delta - ROTATE_DELTA_ANGLE_THRESHOLD : angle_delta + ROTATE_DELTA_ANGLE_THRESHOLD;
 +			tp->gesture.is_rotate = true;
 +			tp_gesture_handle_event(tp, GESTURE_EVENT_PINCH, time);
 +			return;
@@ -2305,7 +2316,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	/* If both touches moved less than a mm, we cannot decide yet */
  	if (first_mm < 1 && second_mm < 1)
  		return;
-@@ -960,9 +1014,9 @@
+@@ -960,9 +1016,9 @@
  		 * This applies to all gestures (2, 3, 4+ fingers), but allows
  		 * more thumb motion on >2 finger gestures during detection.
  		 */
@@ -2313,12 +2324,12 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 -			tp_thumb_suppress(tp, thumb);
 -			tp_gesture_cancel(tp, time);
 +		if (tp->thumb.detect_thumbs && (thumb_mm < min_move || finger_mm < min_move)){
-+			if (fabs(distance_delta) > ROTATE_DELTA_DISTANCE_THRESHOLD)
++			if (fabs(distance_delta) >= ROTATE_DELTA_DISTANCE_THRESHOLD)
 +				tp_gesture_handle_event(tp, GESTURE_EVENT_PINCH, time);
  			return;
  		}
  
-@@ -1119,6 +1173,10 @@
+@@ -1119,6 +1175,10 @@
  	tp->gesture.touches[0] = first;
  	tp->gesture.touches[1] = second;
  
@@ -2329,7 +2340,17 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	tp_gesture_handle_event(tp, GESTURE_EVENT_FINGER_DETECTED, time);
  }
  
-@@ -1190,14 +1248,150 @@
+@@ -1143,6 +1203,9 @@
+ static void
+ tp_gesture_handle_state_hold_and_pointer_motion(struct tp_dispatch *tp, uint64_t time)
+ {
++	if (tp->gesture.finger_count > 1)
++		tp_gesture_cancel(tp, time);
++
+ 	if (tp->queued & TOUCHPAD_EVENT_MOTION)
+ 		tp_gesture_post_pointer_motion(tp, time);
+ 
+@@ -1190,14 +1253,150 @@
  			  &delta);
  }
  
@@ -2480,7 +2501,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  
  	if (!normalized_is_zero(delta) || !device_float_is_zero(raw)) {
  		unaccel = tp_filter_motion_unaccelerated(tp, &raw, time);
-@@ -1205,7 +1399,7 @@
+@@ -1205,7 +1404,7 @@
  		gesture_notify_swipe(&tp->device->base, time,
  				     LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE,
  				     tp->gesture.finger_count,
@@ -2489,7 +2510,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	}
  }
  
-@@ -1269,7 +1463,7 @@
+@@ -1269,7 +1468,7 @@
  		tp_gesture_handle_state_scroll(tp, time);
  
  	if (tp->gesture.state == GESTURE_STATE_SWIPE)
@@ -2498,8 +2519,31 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  
  	if (tp->gesture.state == GESTURE_STATE_PINCH)
  		tp_gesture_handle_state_pinch(tp, time);
+@@ -1432,12 +1631,22 @@
+ 			active_touches++;
+ 	}
+ 
++	static uint64_t time_start = (uint64_t)(-1);
++	time_start = time_start < time ? time_start : time;
++	if (tp->gesture.finger_count == 0 && active_touches > 0) {
++		time_start = time;
++	}
++
+ 	if (active_touches != tp->gesture.finger_count) {
+ 		/* If all fingers are lifted immediately end the gesture */
+ 		if (active_touches == 0) {
+ 			tp_gesture_stop(tp, time);
+ 			tp->gesture.finger_count = 0;
+ 			tp->gesture.finger_count_pending = 0;
++		} else if (tp->gesture.finger_count < active_touches &&
++			time - time_start < TIME_GESTURE_WAIT_ALL_FINGER_DOWN) {
++			tp->gesture.finger_count = active_touches;
++			tp_gesture_cancel(tp, time);
+ 		/* Immediately switch to new mode to avoid initial latency */
+ 		} else if (!tp->gesture.started) {
+ 			tp->gesture.finger_count = active_touches;
 diff -Naur old/src/evdev-mt-touchpad-tap.c new/src/evdev-mt-touchpad-tap.c
---- old/src/evdev-mt-touchpad-tap.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-mt-touchpad-tap.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad-tap.c	2021-01-01 00:00:00.000000000 +0800
 @@ -88,6 +88,7 @@
  	CASE_RETURN_STRING(TAP_STATE_2FGTAP_DRAGGING_2);
@@ -2721,7 +2765,7 @@ diff -Naur old/src/evdev-mt-touchpad-tap.c new/src/evdev-mt-touchpad-tap.c
 +}
 \ No newline at end of file
 diff -Naur old/src/evdev-mt-touchpad.c new/src/evdev-mt-touchpad.c
---- old/src/evdev-mt-touchpad.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-mt-touchpad.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad.c	2021-01-01 00:00:00.000000000 +0800
 @@ -330,6 +330,35 @@
  }
@@ -3051,7 +3095,7 @@ diff -Naur old/src/evdev-mt-touchpad.c new/src/evdev-mt-touchpad.c
 +	return (tp->tool_touches >> shift) & 0x1;
 +}
 diff -Naur old/src/evdev-mt-touchpad.h new/src/evdev-mt-touchpad.h
---- old/src/evdev-mt-touchpad.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-mt-touchpad.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad.h	2021-01-01 00:00:00.000000000 +0800
 @@ -132,6 +132,7 @@
  	TAP_STATE_2FGTAP_DRAGGING_2,
@@ -3477,7 +3521,7 @@ diff -Naur old/src/evdev-privacy-switch.h new/src/evdev-privacy-switch.h
 +
 +#endif
 diff -Naur old/src/evdev-tablet.c new/src/evdev-tablet.c
---- old/src/evdev-tablet.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-tablet.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-tablet.c	2021-01-01 00:00:00.000000000 +0800
 @@ -220,6 +220,7 @@
  	case ABS_TILT_Y:
@@ -3547,7 +3591,7 @@ diff -Naur old/src/evdev-tablet.c new/src/evdev-tablet.c
  	if (tablet_reject_device(device))
  		return -1;
 diff -Naur old/src/evdev-tablet.h new/src/evdev-tablet.h
---- old/src/evdev-tablet.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev-tablet.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-tablet.h	2021-01-01 00:00:00.000000000 +0800
 @@ -152,6 +152,9 @@
  	case ABS_WHEEL:
@@ -3570,7 +3614,7 @@ diff -Naur old/src/evdev-tablet.h new/src/evdev-tablet.h
  		evcode = ABS_MT_TOUCH_MINOR;
  		break;
 diff -Naur old/src/evdev.c new/src/evdev.c
---- old/src/evdev.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev.c	2021-01-01 00:00:00.000000000 +0800
 @@ -52,26 +52,6 @@
  #define DEFAULT_WHEEL_CLICK_ANGLE 15
@@ -3953,7 +3997,7 @@ diff -Naur old/src/evdev.c new/src/evdev.c
 +    return 0;
 +}
 diff -Naur old/src/evdev.h new/src/evdev.h
---- old/src/evdev.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/evdev.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev.h	2021-01-01 00:00:00.000000000 +0800
 @@ -61,6 +61,7 @@
  	EVDEV_DEVICE_TABLET_PAD		= bit(4),
@@ -4148,7 +4192,7 @@ diff -Naur old/src/evdev.h new/src/evdev.h
 +
  #endif /* EVDEV_H */
 diff -Naur old/src/libinput-private.h new/src/libinput-private.h
---- old/src/libinput-private.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/libinput-private.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/libinput-private.h	2021-01-01 00:00:00.000000000 +0800
 @@ -43,12 +43,19 @@
  #include "libinput-version.h"
@@ -4457,7 +4501,7 @@ diff -Naur old/src/libinput-util.c new/src/libinput-util.c
 +}
 +#endif
 diff -Naur old/src/libinput-util.h new/src/libinput-util.h
---- old/src/libinput-util.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/libinput-util.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/libinput-util.h	2021-01-01 00:00:00.000000000 +0800
 @@ -27,9 +27,9 @@
  
@@ -4489,7 +4533,7 @@ diff -Naur old/src/libinput-util.h new/src/libinput-util.h
  	do { \
  	printf("%s() - \033[0;31m", __func__); \
 diff -Naur old/src/libinput.c new/src/libinput.c
---- old/src/libinput.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/libinput.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/libinput.c	2021-01-01 00:00:00.000000000 +0800
 @@ -36,9 +36,12 @@
  
@@ -6233,7 +6277,7 @@ diff -Naur old/src/libinput.c new/src/libinput.c
 +    return LIBINPUT_CONFIG_STATUS_SUCCESS;
 +}
 diff -Naur old/src/libinput.h new/src/libinput.h
---- old/src/libinput.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/libinput.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/libinput.h	2021-01-01 00:00:00.000000000 +0800
 @@ -196,6 +196,22 @@
  	LIBINPUT_DEVICE_CAP_TABLET_PAD = 4,
@@ -7086,7 +7130,7 @@ diff -Naur old/src/libinput.h new/src/libinput.h
  #endif /* LIBINPUT_H */
 +
 diff -Naur old/src/udev-seat.c new/src/udev-seat.c
---- old/src/udev-seat.c	2021-01-01 00:00:00.000000000 +0800
+--- old/src/udev-seat.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/udev-seat.c	2021-01-01 00:00:00.000000000 +0800
 @@ -190,6 +190,7 @@
  
@@ -7111,7 +7155,7 @@ diff -Naur old/src/udev-seat.c new/src/udev-seat.c
  		if (device_added(device, input, NULL) < 0) {
  			udev_device_unref(device);
 diff -Naur old/src/util-strings.h new/src/util-strings.h
---- old/src/util-strings.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/util-strings.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/util-strings.h	2021-01-01 00:00:00.000000000 +0800
 @@ -308,7 +308,7 @@
  	if (!strv)
@@ -7141,7 +7185,7 @@ diff -Naur old/src/util-strings.h new/src/util-strings.h
  	char *dst = sanitized;
  
 diff -Naur old/src/util-time.h new/src/util-time.h
---- old/src/util-time.h	2021-01-01 00:00:00.000000000 +0800
+--- old/src/util-time.h	2024-01-01 00:00:00.000000000 +0800
 +++ new/src/util-time.h	2021-01-01 00:00:00.000000000 +0800
 @@ -109,7 +109,8 @@
  static inline struct human_time
@@ -7172,7 +7216,7 @@ diff -Naur old/src/util-time.h new/src/util-time.h
 +	//assert(1);
  }
 diff -Naur old/tools/libinput-debug-events.c new/tools/libinput-debug-events.c
---- old/tools/libinput-debug-events.c	2021-01-01 00:00:00.000000000 +0800
+--- old/tools/libinput-debug-events.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/tools/libinput-debug-events.c	2021-01-01 00:00:00.000000000 +0800
 @@ -110,6 +110,15 @@
  	case LIBINPUT_EVENT_TOUCH_FRAME:
@@ -7274,7 +7318,7 @@ diff -Naur old/tools/libinput-debug-events.c new/tools/libinput-debug-events.c
  
  		libinput_event_destroy(ev);
 diff -Naur old/tools/libinput-record.c new/tools/libinput-record.c
---- old/tools/libinput-record.c	2021-01-01 00:00:00.000000000 +0800
+--- old/tools/libinput-record.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/tools/libinput-record.c	2021-01-01 00:00:00.000000000 +0800
 @@ -53,6 +53,7 @@
  #include "util-time.h"
@@ -7285,7 +7329,7 @@ diff -Naur old/tools/libinput-record.c new/tools/libinput-record.c
  static const int FILE_VERSION_NUMBER = 1;
  
 diff -Naur old/udev/libinput-device-group.c new/udev/libinput-device-group.c
---- old/udev/libinput-device-group.c	2021-01-01 00:00:00.000000000 +0800
+--- old/udev/libinput-device-group.c	2024-01-01 00:00:00.000000000 +0800
 +++ new/udev/libinput-device-group.c	2021-01-01 00:00:00.000000000 +0800
 @@ -137,7 +137,7 @@
  				*product_id = pid;
