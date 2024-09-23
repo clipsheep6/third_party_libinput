@@ -2208,7 +2208,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  #define HOLD_AND_MOTION_THRESHOLD 0.5 /* mm */
  #define PINCH_DISAMBIGUATION_MOVE_THRESHOLD 1.5 /* mm */
 -
-+#define ROTATE_DELTA_ANGLE_THRESHOLD 5.0 /* ° */
++#define ROTATE_DELTA_ANGLE_THRESHOLD 10.0 /* ° */
 +#define ROTATE_DELTA_DISTANCE_THRESHOLD 100.0 /* ppi */
 +#define TIME_GESTURE_WAIT_ALL_FINGER_DOWN 100000
  enum gesture_event {
@@ -2287,6 +2287,24 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  				      time,
  				      &delta,
  				      &unaccel);
+@@ -871,7 +906,7 @@
+ 	struct phys_coords first_moved, second_moved, distance_mm;
+ 	double first_mm, second_mm; /* movement since gesture start in mm */
+ 	double thumb_mm, finger_mm;
+-	double min_move = 1.5; /* min movement threshold in mm - count this touch */
++	double min_move = 1.0; /* min movement threshold in mm - count this touch */
+ 	double max_move = 4.0; /* max movement threshold in mm - ignore other touch */
+ 	bool is_hold_and_motion;
+ 
+@@ -912,7 +947,7 @@
+ 
+ 	/* Need more margin for error when there are more fingers */
+ 	max_move += 2.0 * (tp->gesture.finger_count - 2);
+-	min_move += 0.5 * (tp->gesture.finger_count - 2);
++	min_move += 0.4 * (tp->gesture.finger_count - 2);
+ 
+ 	second_moved = tp_gesture_mm_moved(tp, second);
+ 	second_mm = hypot(second_moved.x, second_moved.y);
 @@ -920,7 +955,27 @@
  	delta.x = abs(first->point.x - second->point.x);
  	delta.y = abs(first->point.y - second->point.y);
