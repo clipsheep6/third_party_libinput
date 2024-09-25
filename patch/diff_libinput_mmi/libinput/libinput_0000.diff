@@ -1588,7 +1588,7 @@ diff -Naur old/src/evdev-joystick.c new/src/evdev-joystick.c
 +    }
 +
 +    if (joystick_dispatch->axis_value_mask != 0) {
-+        joysticks_notify_axis(&device->base, time, joystick_dispatch->axis_value_mask, 
++        joysticks_notify_axis(&device->base, time, joystick_dispatch->axis_value_mask,
 +            &joystick_dispatch->axis_abs_infos);
 +        joystick_reset_axis_value_mask(joystick_dispatch);
 +    }
@@ -1950,17 +1950,17 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 --- old/src/evdev-mt-touchpad-buttons.c	2021-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad-buttons.c	2021-01-01 00:00:00.000000000 +0800
 @@ -25,6 +25,7 @@
- 
+
  #include <limits.h>
  #include <math.h>
 +#include <pthread.h>
  #include <string.h>
  #include "linux/input.h"
- 
+
 @@ -43,6 +44,73 @@
   * The state machine only affects the soft button area code.
   */
- 
+
 +struct evdev_rightbutton_area {
 +    int32_t scale_x; /* width percent */
 +    int32_t scale_y; /* height percent */
@@ -2034,15 +2034,15 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 @@ -520,7 +588,7 @@
  	mm = evdev_device_unit_delta_to_mm(tp->device, &delta);
  	vector_length = hypot(mm.x, mm.y);
- 
+
 -	if (vector_length > 5.0 /* mm */) {
 +	if (vector_length > 1.0 /* mm */) {
  		t->button.has_moved = true;
- 
+
  		tp_button_release_other_bottom_touches(tp,
 @@ -622,6 +690,62 @@
  }
- 
+
  static void
 +tp_init_rightbutton_area(struct tp_dispatch *tp,
 +            struct evdev_device *device)
@@ -2106,13 +2106,13 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 @@ -630,14 +754,18 @@
  	int mb_le, mb_re; /* middle button left/right edge */
  	struct phys_coords mm = { 0.0, 0.0 };
- 
+
 +    if (is_rightbutton_area_enable()) {
 +        return tp_init_rightbutton_area(tp, device);
 +    }
 +
  	evdev_device_get_size(device, &width, &height);
- 
+
  	/* button height: 10mm or 15% or the touchpad height,
  	   whichever is smaller */
 -	if (height * 0.15 > 10)
@@ -2122,11 +2122,11 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
  	else
 -		mm.y = height * 0.85;
 +		mm.y = height * 0.63;
- 
+
  	mm.x = width * 0.5;
  	edges = evdev_device_mm_to_units(device, &mm);
 @@ -748,6 +876,7 @@
- 
+
  	switch (tp->buttons.click_method) {
  	case LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS:
 +        (void)evdev_clickpad_rightbutton_apply_config();
@@ -2136,12 +2136,12 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 @@ -1210,10 +1339,11 @@
  			return 0;
  	}
- 
+
 -	evdev_pointer_notify_button(tp->device, time, button, state);
 +	evdev_pointer_notify_button_touchpad(tp->device, time, button, state);
  	return 1;
  }
- 
+
 +#define BTN_RIGHT_MENUE 0x118
  static int
  tp_post_clickpadbutton_buttons(struct tp_dispatch *tp, uint64_t time)
@@ -2162,7 +2162,7 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 -	return t->button.state == BUTTON_STATE_AREA || t->button.has_moved;
 +	return t->button.state == BUTTON_STATE_AREA || t->button.state == BUTTON_STATE_BOTTOM || t->button.has_moved;
  }
- 
+
  bool
 @@ -1345,3 +1475,35 @@
  	return is_inside_top_button_area(tp, t) ||
@@ -2204,11 +2204,11 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 --- old/src/evdev-mt-touchpad-gestures.c	2021-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-mt-touchpad-gestures.c	2021-01-01 00:00:00.000000000 +0800
 @@ -36,7 +36,9 @@
- 
+
  #define HOLD_AND_MOTION_THRESHOLD 0.5 /* mm */
  #define PINCH_DISAMBIGUATION_MOVE_THRESHOLD 1.5 /* mm */
 -
-+#define ROTATE_DELTA_ANGLE_THRESHOLD 5.0 /* ° */
++#define ROTATE_DELTA_ANGLE_THRESHOLD 10.0 /* ° */
 +#define ROTATE_DELTA_DISTANCE_THRESHOLD 100.0 /* ppi */
 +#define TIME_GESTURE_WAIT_ALL_FINGER_DOWN 100000
  enum gesture_event {
@@ -2216,7 +2216,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	GESTURE_EVENT_FINGER_DETECTED,
 @@ -124,6 +126,37 @@
  }
- 
+
  static void
 +tp_get_raw_touches(struct tp_dispatch *tp, struct sloted_coords_info *raw_touches)
 +{
@@ -2280,7 +2280,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  		break;
 @@ -233,7 +268,7 @@
  		struct device_float_coords unaccel;
- 
+
  		unaccel = tp_scale_to_xaxis(tp, raw);
 -		pointer_notify_motion(&tp->device->base,
 +		touchpad_pointer_notify_motion(&tp->device->base,
@@ -2293,7 +2293,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	bool is_hold_and_motion;
 +	double angle_delta = 0.0;
 +	double distance_delta = 0.0;
- 
+
  	first_moved = tp_gesture_mm_moved(tp, first);
  	first_mm = hypot(first_moved.x, first_moved.y);
 @@ -960,9 +997,30 @@
@@ -2329,8 +2329,29 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +				tp_gesture_handle_event(tp, GESTURE_EVENT_PINCH, time);
  			return;
  		}
- 
-@@ -1016,7 +1074,27 @@
+
+@@ -976,6 +1034,20 @@
+ 			return;
+ 		}
+
++        	/* If we can't accurately detect pinches, or if the touches are moving
++         	* the same way, this is a scroll or swipe.
++         	*/
++        	if (tp->gesture.enabled &&
++            	    tp->gesture.finger_count > tp->num_slots &&
++            	    tp->gesture.finger_count > 2) {
++            	    dir1 = tp_gesture_get_direction(tp, first);
++            	    dir2 = tp_gesture_get_direction(tp, second);
++            	    if (tp_gesture_same_directions(dir1, dir2)) {
++            		tp_gesture_handle_event(tp, GESTURE_EVENT_SWIPE, time);
++            		return;
++            	    }
++        	}
++
+ 		/* If more than 2 fingers are involved, and the thumb moves
+ 		 * while the fingers stay still, assume a pinch if eligible.
+ 		 */
+@@ -1016,7 +1088,27 @@
  			return;
  		}
  	}
@@ -2359,18 +2380,18 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	/* If the touches are moving away from each other, this is a pinch */
  	tp_gesture_handle_event(tp, GESTURE_EVENT_PINCH, time);
  }
-@@ -1119,6 +1197,10 @@
+@@ -1119,6 +1211,10 @@
  	tp->gesture.touches[0] = first;
  	tp->gesture.touches[1] = second;
- 
+
 +	struct device_float_coords center;
 +	tp_gesture_get_pinch_info(tp, &tp->gesture.initial_distance, &tp->gesture.angle, &center);
 +	tp->gesture.angle_delta = 0.0;
 +	tp->gesture.is_rotate = false;
  	tp_gesture_handle_event(tp, GESTURE_EVENT_FINGER_DETECTED, time);
  }
- 
-@@ -1143,6 +1225,9 @@
+
+@@ -1143,6 +1239,9 @@
  static void
  tp_gesture_handle_state_hold_and_pointer_motion(struct tp_dispatch *tp, uint64_t time)
  {
@@ -2379,11 +2400,11 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +
  	if (tp->queued & TOUCHPAD_EVENT_MOTION)
  		tp_gesture_post_pointer_motion(tp, time);
- 
-@@ -1190,14 +1275,150 @@
+
+@@ -1190,14 +1289,150 @@
  			  &delta);
  }
- 
+
 +static double
 +calculate_cosine_similarity(struct tp_dispatch *tp, struct device_coords *delta1, struct device_coords *delta2)
 +{
@@ -2434,7 +2455,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +	return &gesture_coords;
 +}
 +
-+static void 
++static void
 +updata_gesture_device_coords(struct device_coords *coords, int coords_len)
 +{
 +	struct gesture_device_coords * gesture_coords = get_gesture_device_coords();
@@ -2442,7 +2463,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +	gesture_coords->coords_len = coords_len;
 +}
 +
-+static void 
++static void
 +reset_gesture_device_coords(void)
 +{
 +	struct gesture_device_coords * gesture_coords = get_gesture_device_coords();
@@ -2524,14 +2545,14 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
  	struct device_float_coords raw;
 +	struct sloted_coords_info raw_touches = {};
  	struct normalized_coords delta, unaccel;
- 
+
  	raw = tp_get_average_touches_delta(tp);
  	delta = tp_filter_motion(tp, &raw, time);
 +	tp_get_raw_touches(tp, &raw_touches);
- 
+
  	if (!normalized_is_zero(delta) || !device_float_is_zero(raw)) {
  		unaccel = tp_filter_motion_unaccelerated(tp, &raw, time);
-@@ -1205,7 +1426,7 @@
+@@ -1205,7 +1440,7 @@
  		gesture_notify_swipe(&tp->device->base, time,
  				     LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE,
  				     tp->gesture.finger_count,
@@ -2539,17 +2560,17 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +				     &delta, &unaccel, &raw_touches);
  	}
  }
- 
-@@ -1269,7 +1490,7 @@
+
+@@ -1269,7 +1504,7 @@
  		tp_gesture_handle_state_scroll(tp, time);
- 
+
  	if (tp->gesture.state == GESTURE_STATE_SWIPE)
 -		tp_gesture_handle_state_swipe(tp, time);
 +		tp_gesture_handle_state_swipe_private(tp, time);
- 
+
  	if (tp->gesture.state == GESTURE_STATE_PINCH)
  		tp_gesture_handle_state_pinch(tp, time);
-@@ -1432,12 +1653,22 @@
+@@ -1432,12 +1667,22 @@
  			active_touches++;
  	}
  
