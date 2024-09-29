@@ -980,6 +980,29 @@ diff -Naur old/include/linux/linux/input-event-codes.h new/include/linux/linux/i
  #define SW_CNT			(SW_MAX+1)
  
  /*
+diff -Naur old/patch/diff_libinput_mmi/libinput/libinput_0000.diff new/patch/diff_libinput_mmi/libinput/libinput_0000.diff
+--- old/patch/diff_libinput_mmi/libinput/libinput_0000.diff	2024-09-27 02:46:48.775287485 +0000
++++ new/patch/diff_libinput_mmi/libinput/libinput_0000.diff	2024-09-27 03:25:06.307339118 +0000
+@@ -2255,6 +2255,7 @@
+ @@ -170,17 +203,19 @@
+  	case GESTURE_STATE_SCROLL:
+  		tp_gesture_init_scroll(tp);
++		evdev_log_libinput_info(tp->device, "Two-finger sliding begins");
+  		break;
+ -	case GESTURE_STATE_PINCH:
+ +	case GESTURE_STATE_PINCH: {
+@@ -2267,6 +2268,11 @@
+ +					LIBINPUT_EVENT_GESTURE_PINCH_BEGIN,
+ +					tp->gesture.finger_count,
+ +					&zero, &zero, 1.0, angle);
++        if (tp->gesture.is_rotate) {
++			evdev_log_libinput_info(tp->device, "rotate begin");
++		} else {
++			evdev_log_libinput_info(tp->device, "pinch begin");
++		}
+ +			break;
+ +		}
+  	case GESTURE_STATE_SWIPE:
 diff -Naur old/src/evdev-fallback.c new/src/evdev-fallback.c
 --- old/src/evdev-fallback.c	2021-01-01 00:00:00.000000000 +0800
 +++ new/src/evdev-fallback.c	2021-01-01 00:00:00.000000000 +0800
@@ -2040,7 +2063,19 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
  		t->button.has_moved = true;
  
  		tp_button_release_other_bottom_touches(tp,
-@@ -622,6 +690,62 @@
+@@ -605,9 +673,11 @@
+ 	if (e->value) {
+ 		tp->buttons.state |= mask;
+ 		tp->queued |= TOUCHPAD_EVENT_BUTTON_PRESS;
++		evdev_log_libinput_info(tp->device, "into TOUCHPAD_EVENT_BUTTON_PRESS");
+ 	} else {
+ 		tp->buttons.state &= ~mask;
+ 		tp->queued |= TOUCHPAD_EVENT_BUTTON_RELEASE;
++		evdev_log_libinput_info(tp->device, "into TOUCHPAD_EVENT_BUTTON_RELEASE");
+ 	}
+ }
+ 
+@@ -622,6 +692,62 @@
  }
  
  static void
@@ -4193,7 +4228,17 @@ diff -Naur old/src/evdev.h new/src/evdev.h
  		 (priority > LIBINPUT_LOG_PRIORITY_DEBUG) ?  device->log_prefix_name : "",
  		 (priority > LIBINPUT_LOG_PRIORITY_DEBUG) ?  ": " : "",
  		 format);
-@@ -1028,7 +1097,8 @@
+@@ -855,6 +924,9 @@
+ #define evdev_log_bug_kernel(d_, ...) evdev_log_msg((d_), LIBINPUT_LOG_PRIORITY_ERROR, "kernel bug: " __VA_ARGS__)
+ #define evdev_log_bug_libinput(d_, ...) evdev_log_msg((d_), LIBINPUT_LOG_PRIORITY_ERROR, "libinput bug: " __VA_ARGS__)
+ #define evdev_log_bug_client(d_, ...) evdev_log_msg((d_), LIBINPUT_LOG_PRIORITY_ERROR, "client bug: " __VA_ARGS__)
++#define evdev_log_libinput_info(d_, ...) evdev_log_msg((d_), LIBINPUT_LOG_PRIORITY_ERROR, "LOG_LEVEL_I: " __VA_ARGS__)
++#define evdev_log_libinput_debug(d_, ...) evdev_log_msg((d_), LIBINPUT_LOG_PRIORITY_ERROR, "LOG_LEVEL_D: " __VA_ARGS__)
++#define evdev_log_libinput_error(d_, ...) evdev_log_msg((d_), LIBINPUT_LOG_PRIORITY_ERROR, "LOG_LEVEL_E: " __VA_ARGS__)
+ 
+ #define evdev_log_debug_ratelimit(d_, r_, ...) \
+ 	evdev_log_msg_ratelimit((d_), (r_), LIBINPUT_LOG_PRIORITY_DEBUG, __VA_ARGS__)
+@@ -1028,7 +1100,8 @@
  				   "Axis %#x value %d is outside expected range [%d, %d]\n"
  				   "See %s/absolute_coordinate_ranges.html for details\n",
  				   code, value, min, max,
@@ -4274,7 +4319,17 @@ diff -Naur old/src/libinput-private.h new/src/libinput-private.h
  typedef void (*libinput_source_dispatch_t)(void *data);
  
  #define log_debug(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_DEBUG, __VA_ARGS__)
-@@ -628,6 +650,12 @@
+@@ -506,6 +528,9 @@
+ #define log_bug_kernel(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_ERROR, "kernel bug: " __VA_ARGS__)
+ #define log_bug_libinput(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_ERROR, "libinput bug: " __VA_ARGS__)
+ #define log_bug_client(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_ERROR, "client bug: " __VA_ARGS__)
++#define log_libinput_info(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_ERROR, "LOG_LEVEL_I: " __VA_ARGS__)
++#define log_libinput_debug(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_ERROR, "LOG_LEVEL_D: " __VA_ARGS__)
++#define log_libinput_error(li_, ...) log_msg((li_), LIBINPUT_LOG_PRIORITY_ERROR, "LOG_LEVEL_E: " __VA_ARGS__)
+ 
+ #define log_debug_ratelimit(li_, r_, ...) log_msg_ratelimit((li_), (r_), LIBINPUT_LOG_PRIORITY_DEBUG, __VA_ARGS__)
+ #define log_info_ratelimit(li_, r_, ...) log_msg_ratelimit((li_), (r_), LIBINPUT_LOG_PRIORITY_INFO, __VA_ARGS__)
+@@ -628,6 +653,12 @@
  		      const struct device_float_coords *raw);
  
  void
@@ -7149,6 +7204,39 @@ diff -Naur old/src/libinput.h new/src/libinput.h
  #endif
  #endif /* LIBINPUT_H */
 +
+diff -Naur old/src/path-seat.c new/src/path-seat.c
+--- old/src/path-seat.c	2024-09-27 02:46:48.903291628 +0000
++++ new/src/path-seat.c	2024-09-27 03:29:28.652578666 +0000
+@@ -365,25 +365,26 @@
+ 	struct libinput_device *device;
+ 
+ 	if (strlen(path) > PATH_MAX) {
+-		log_bug_client(libinput,
++		log_libinput_error(libinput,
+ 			       "Unexpected path, limited to %d characters.\n",
+ 			       PATH_MAX);
+ 		return NULL;
+ 	}
+ 
+ 	if (libinput->interface_backend != &interface_backend) {
+-		log_bug_client(libinput, "Mismatching backends.\n");
++		log_libinput_error(libinput, "Mismatching backends.\n");
+ 		return NULL;
+ 	}
+ 
+ 	udev_device = udev_device_from_devnode(libinput, udev, path);
+ 	if (!udev_device) {
+-		log_bug_client(libinput, "Invalid path %s\n", path);
++		log_libinput_error(libinput, "Invalid path %s\n", path);
+ 		return NULL;
+ 	}
+ 
+ 	if (ignore_litest_test_suite_device(udev_device)) {
+ 		udev_device_unref(udev_device);
++		log_libinput_error(libinput, "ignore_litest_test_suite_device\n");
+ 		return NULL;
+ 	}
+ 
 diff -Naur old/src/udev-seat.c new/src/udev-seat.c
 --- old/src/udev-seat.c	2021-01-01 00:00:00.000000000 +0800
 +++ new/src/udev-seat.c	2021-01-01 00:00:00.000000000 +0800
