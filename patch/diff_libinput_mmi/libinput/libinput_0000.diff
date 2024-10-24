@@ -2242,7 +2242,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +#define ROTATE_DELTA_DISTANCE_THRESHOLD 100.0 /* ppi */
 +#define TIME_GESTURE_WAIT_ALL_FINGER_DOWN 100000
 +
-+#define PRESS_AND_DRAG_LEFT_EDGE_BIT  0x01
++#define PRESS_AND_DRAG_LEFT_EDGE_BIT 0x01
 +#define PRESS_AND_DRAG_RIGHT_EDGE_BIT 0x02
 +#define PRESS_AND_DRAG_UPPER_EDGE_BIT 0x04
 +#define PRESS_AND_DRAG_LOWER_EDGE_BIT 0x08
