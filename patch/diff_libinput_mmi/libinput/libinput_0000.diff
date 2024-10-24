@@ -2400,7 +2400,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +	for (i = 0; i < tp->num_slots; i++) {
 +		t = &tp->touches[i];
 +
-+		if (!tp_touch_active_for_gesture(tp, t))
++		if (!tp_touch_active_for_gesture(tp, t, time))
 +			continue;
 +		
 +		if (t->point.x < tp->press_and_drag.left_edge) {
@@ -2827,7 +2827,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +
 +	evdev_device_get_size(tp->device, &width, &height);
 +
-+	/* press-and-drag edges are 5% of the width/height on each side */
++	/* press-and-drag left edge is 5% of the width */
 +	mm.x = width * 0.05;
 +	device_unit = evdev_device_mm_to_units(tp->device, &mm);
 +	tp->press_and_drag.left_edge = device_unit.x;
@@ -2851,7 +2851,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +	mm.x = hypot(width, height) * 0.2;
 +	device_unit = evdev_device_mm_to_units(tp->device, &mm);
 +	tp->press_and_drag.speed = (double) device_unit.x / s2us(1);
-+} 
++}
 +
  void
  tp_init_gesture(struct tp_dispatch *tp)
