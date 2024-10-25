@@ -2232,7 +2232,7 @@ diff -Naur old/src/evdev-mt-touchpad-buttons.c new/src/evdev-mt-touchpad-buttons
 +}
 diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestures.c
 --- old/src/evdev-mt-touchpad-gestures.c	2024-10-24 13:57:57.489937632 +0000
-+++ new/src/evdev-mt-touchpad-gestures.c	2024-10-24 14:04:14.180276683 +0000
++++ new/src/evdev-mt-touchpad-gestures.c	2024-10-25 02:25:19.462065105 +0000
 @@ -36,6 +36,14 @@
  
  #define HOLD_AND_MOTION_THRESHOLD 0.5 /* mm */
@@ -2848,7 +2848,7 @@ diff -Naur old/src/evdev-mt-touchpad-gestures.c new/src/evdev-mt-touchpad-gestur
 +	/* press-and-drag speed is 20% of the diagonal per second */
 +	mm.x = hypot(width, height) * 0.2;
 +	device_unit = evdev_device_mm_to_units(tp->device, &mm);
-+	tp->press_and_drag.speed = (double) device_unit.x / s2us(1);
++	tp->press_and_drag.speed = (double)device_unit.x / s2us(1);
 +}
 +
  void
